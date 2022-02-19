@@ -1,0 +1,25 @@
+version: "3.0"
+services:
+  todo-api:
+    build: .
+    ports:
+      - "8080:8080"
+    restart: on-failure
+  nginx:
+    image: hakankaan/nginx-simple
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - "todo-api"
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./data/postgres:/var/lib/postgresql/data"
