@@ -32,9 +32,17 @@ func (ts *service) addTodo(c *fiber.Ctx) error {
 		Title:       r.Title,
 		Description: r.Description,
 	}
-	err := ts.r.AddTodo(t)
+	err := ts.pr.AddTodo(t)
 	if err != nil {
-		ts.l.Error("r.AddTodo", err)
+		ts.l.Error("pr.AddTodo", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
+			Msg: err.Error(),
+		})
+	}
+
+	err = ts.rr.AddTodo(t)
+	if err != nil {
+		ts.l.Error("rr.AddTodo", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
 			Msg: err.Error(),
 		})
@@ -54,12 +62,16 @@ func (ts *service) addTodo(c *fiber.Ctx) error {
 func (ts *service) getTodo(c *fiber.Ctx) error {
 	guid := c.Params("guid")
 
-	t, err := ts.r.GetTodo(guid)
+	t, err := ts.rr.GetTodo(guid)
 	if err != nil {
-		ts.l.Error("r.GetTodo", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
-			Msg: err.Error(),
-		})
+		ts.l.Warn("r.GetTodo", err.Error())
+		t, err = ts.pr.GetTodo(guid)
+		if err != nil {
+			ts.l.Error("r.GetTodo", err)
+			return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
+				Msg: err.Error(),
+			})
+		}
 	}
 
 	resp := todoResponse{
@@ -76,7 +88,15 @@ func (ts *service) getTodo(c *fiber.Ctx) error {
 func (ts *service) deleteTodo(c *fiber.Ctx) error {
 	guid := c.Params("guid")
 
-	err := ts.r.DeleteTodo(guid)
+	err := ts.rr.DeleteTodo(guid)
+	if err != nil {
+		ts.l.Error("r.DeleteTodo", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
+			Msg: err.Error(),
+		})
+	}
+
+	err = ts.pr.DeleteTodo(guid)
 	if err != nil {
 		ts.l.Error("r.DeleteTodo", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
@@ -95,7 +115,15 @@ func (ts *service) deleteTodo(c *fiber.Ctx) error {
 func (ts *service) makeDone(c *fiber.Ctx) error {
 	guid := c.Params("guid")
 
-	err := ts.r.MakeDone(guid)
+	err := ts.rr.MakeDone(guid)
+	if err != nil {
+		ts.l.Error("r.MakeDone", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
+			Msg: err.Error(),
+		})
+	}
+
+	err = ts.pr.MakeDone(guid)
 	if err != nil {
 		ts.l.Error("r.MakeDone", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{

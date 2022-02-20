@@ -6,6 +6,7 @@ import (
 	"github.com/hakankaan/todo-api/pkg/http/rest"
 	"github.com/hakankaan/todo-api/pkg/logging"
 	"github.com/hakankaan/todo-api/pkg/store/postgres"
+	"github.com/hakankaan/todo-api/pkg/store/redis"
 	"github.com/hakankaan/todo-api/pkg/todos"
 )
 
@@ -20,7 +21,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	ts := todos.NewService(l, rs, ps)
+	rediss := redis.New(l)
+
+	ts := todos.NewService(l, rs, ps, rediss)
 	ts.InitRoutes()
 
 	rs.RunWeb()

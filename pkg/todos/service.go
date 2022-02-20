@@ -14,17 +14,19 @@ type Repository interface {
 }
 
 type service struct {
-	r  Repository
+	pr Repository
 	l  logging.Service
 	rs rest.RestService
+	rr Repository
 }
 
 // Newservice returns a new service for todos
-func NewService(l logging.Service, rs *rest.RestService, r Repository) *service {
+func NewService(l logging.Service, rs *rest.RestService, pr Repository, rr Repository) *service {
 	return &service{
 		l:  l,
 		rs: *rs,
-		r:  r,
+		pr: pr,
+		rr: rr,
 	}
 }
 
@@ -32,7 +34,6 @@ func NewService(l logging.Service, rs *rest.RestService, r Repository) *service 
 func (ts *service) InitRoutes() {
 	r := ts.rs.App
 
-	r.Get("/ping", ts.ping)
 	r.Post("/api/todos", ts.addTodo)
 	r.Get("/api/todos/:guid", ts.getTodo)
 	r.Put("/api/todos/:guid", ts.makeDone)
