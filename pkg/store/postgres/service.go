@@ -19,6 +19,7 @@ type service struct {
 func New(l logging.Service) (s *service, err error) {
 	db, err := newConnection()
 	if err != nil {
+		l.Error("newConnection", err)
 		os.Exit(1)
 	}
 
@@ -29,6 +30,7 @@ func New(l logging.Service) (s *service, err error) {
 
 	err = s.migrateAll()
 	if err != nil {
+		l.Error("migrateAll", err)
 		os.Exit(1)
 	}
 

@@ -23,6 +23,7 @@ func (ts *service) ping(c *fiber.Ctx) error {
 func (ts *service) addTodo(c *fiber.Ctx) error {
 	var r AddTodoRequest
 	if err := c.BodyParser(&r); err != nil {
+		ts.l.Error("c.BodyParser", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
 			Msg: err.Error(),
 		})
@@ -37,6 +38,7 @@ func (ts *service) addTodo(c *fiber.Ctx) error {
 	}
 	err := ts.r.AddTodo(t)
 	if err != nil {
+		ts.l.Error("r.AddTodo", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
 			Msg: err.Error(),
 		})
@@ -58,6 +60,7 @@ func (ts *service) getTodo(c *fiber.Ctx) error {
 
 	t, err := ts.r.GetTodo(guid)
 	if err != nil {
+		ts.l.Error("r.GetTodo", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
 			Msg: err.Error(),
 		})
@@ -79,6 +82,7 @@ func (ts *service) deleteTodo(c *fiber.Ctx) error {
 
 	err := ts.r.DeleteTodo(guid)
 	if err != nil {
+		ts.l.Error("r.DeleteTodo", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
 			Msg: err.Error(),
 		})
@@ -97,6 +101,7 @@ func (ts *service) makeDone(c *fiber.Ctx) error {
 
 	err := ts.r.MakeDone(guid)
 	if err != nil {
+		ts.l.Error("r.MakeDone", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
 			Msg: err.Error(),
 		})
