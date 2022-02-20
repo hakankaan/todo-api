@@ -28,6 +28,7 @@ func (s *RestService) UseMiddlewares(middlewares ...func(*fiber.Ctx) error) {
 	}
 }
 
+// RunWeb starts fiber.App
 func (s *RestService) RunWeb() {
 	s.UseMiddlewares(logger.New(), cors.New())
 	s.Logger.Error("listen", s.App.Listen(":8080"))
