@@ -7,13 +7,6 @@ services:
     restart: always
     depends_on:
       - postgres
-  # nginx:
-  #   image: hakankaan/nginx-simple
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - "todo-api"
   postgres:
     image: postgres:12
     restart: always

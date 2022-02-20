@@ -15,10 +15,6 @@ type todoResponse struct {
 	store.Todo `json:"data"`
 }
 
-func (ts *service) ping(c *fiber.Ctx) error {
-	return c.SendString("success")
-}
-
 // addTodo validates request with AddTodoRequest then adds todo to store
 func (ts *service) addTodo(c *fiber.Ctx) error {
 	var r AddTodoRequest
