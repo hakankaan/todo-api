@@ -1,8 +1,10 @@
 package postgres
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/hakankaan/todo-api/pkg/config"
 	"github.com/hakankaan/todo-api/pkg/logging"
 	"github.com/hakankaan/todo-api/pkg/store"
 	"gorm.io/driver/postgres"
@@ -11,13 +13,21 @@ import (
 
 // service is a struct for database access service
 type service struct {
-	l  logging.Service
-	DB *gorm.DB
+	l      logging.Service
+	DB     *gorm.DB
+	Config config.Service
 }
 
 // New constructor of the database access service
-func New(l logging.Service) (s *service, err error) {
-	db, err := newConnection()
+func New(l logging.Service, c config.Service) (s *service) {
+	h := c.CFG.Postgres.Host
+	p := c.CFG.Postgres.Port
+	u := c.CFG.Postgres.User
+	dbname := c.CFG.Postgres.DB
+	pass := c.CFG.Postgres.Pass
+	sslmode := c.CFG.Postgres.SSL
+
+	db, err := newConnection(h, p, u, dbname, pass, sslmode)
 	if err != nil {
 		l.Error("newConnection", err)
 		os.Exit(1)
@@ -38,8 +48,8 @@ func New(l logging.Service) (s *service, err error) {
 }
 
 // newConnection creates a new connection to the database
-func newConnection() (db *gorm.DB, err error) {
-	dsn := "host=postgres port=5432 user=postgres dbname=todo password=postgres sslmode=disable"
+func newConnection(h, p, u, dbname, pass, sslmode string) (db *gorm.DB, err error) {
+	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s", h, p, u, dbname, pass, sslmode)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	return
 }

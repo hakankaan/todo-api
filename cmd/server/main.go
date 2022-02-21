@@ -1,8 +1,7 @@
 package main
 
 import (
-	"os"
-
+	"github.com/hakankaan/todo-api/pkg/config"
 	"github.com/hakankaan/todo-api/pkg/http/rest"
 	"github.com/hakankaan/todo-api/pkg/logging"
 	"github.com/hakankaan/todo-api/pkg/store/postgres"
@@ -11,19 +10,18 @@ import (
 )
 
 func main() {
-	l := logging.NewStdoutLogging("DEBUG")
 
-	rs := rest.New(l)
+	c := config.New()
 
-	ps, err := postgres.New(l)
-	if err != nil {
-		l.Error("postgres.New", err)
-		os.Exit(1)
-	}
+	l := logging.NewStdoutLogging(c.CFG.Logging.Level)
 
-	rediss := redis.New(l)
+	rs := rest.New(l, c)
 
-	ts := todos.NewService(l, rs, ps, rediss)
+	ps := postgres.New(l, c)
+
+	redis := redis.New(l, c)
+
+	ts := todos.NewService(l, rs, ps, redis)
 	ts.InitRoutes()
 
 	rs.RunWeb()

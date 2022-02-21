@@ -1,7 +1,10 @@
 package redis
 
 import (
+	"fmt"
+
 	"github.com/go-redis/redis/v8"
+	"github.com/hakankaan/todo-api/pkg/config"
 	"github.com/hakankaan/todo-api/pkg/logging"
 )
 
@@ -11,9 +14,12 @@ type service struct {
 	r *redis.Client
 }
 
-func New(l logging.Service) (s *service) {
+// New returns a new service
+func New(l logging.Service, c config.Service) (s *service) {
+	h := c.CFG.Redis.Host
+	p := c.CFG.Redis.Port
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: fmt.Sprintf("%s:%s", h, p),
 	})
 	s = &service{
 		l: l,
