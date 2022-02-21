@@ -1,5 +1,7 @@
 package store
 
+import "encoding/json"
+
 // Todo is a struct for todo
 type Todo struct {
 	ID          uint   `gorm:"column:id;primaryKey;autoIncrement" json:"-"`
@@ -7,4 +9,8 @@ type Todo struct {
 	Title       string `gorm:"column:title;not null" json:"title"`
 	Description string `gorm:"column:description" json:"description"`
 	IsDone      bool   `gorm:"column:is_done;default:false" json:"is_done"`
+}
+
+func (t Todo) MarshalBinary() ([]byte, error) {
+	return json.Marshal(t)
 }

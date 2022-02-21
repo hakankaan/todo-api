@@ -1,6 +1,7 @@
 package todos
 
 import (
+	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/hakankaan/todo-api/pkg/store"
@@ -17,10 +18,20 @@ type todoResponse struct {
 
 // addTodo validates request with AddTodoRequest then adds todo to store
 func (ts *service) addTodo(c *fiber.Ctx) error {
-	var r AddTodoRequest
-	if err := c.BodyParser(&r); err != nil {
+	var r addTodoRequest
+	err := c.BodyParser(&r)
+	if err != nil {
 		ts.l.Error("c.BodyParser", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
+			Msg: err.Error(),
+		})
+	}
+
+	vldt := validator.New()
+	err = vldt.Struct(r)
+	if err != nil {
+		ts.l.Error("vldt.Struct.", err)
+		return c.Status(fiber.StatusNotAcceptable).JSON(baseResponse{
 			Msg: err.Error(),
 		})
 	}
@@ -32,7 +43,7 @@ func (ts *service) addTodo(c *fiber.Ctx) error {
 		Title:       r.Title,
 		Description: r.Description,
 	}
-	err := ts.pr.AddTodo(t)
+	err = ts.pr.AddTodo(t)
 	if err != nil {
 		ts.l.Error("pr.AddTodo", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
@@ -43,9 +54,6 @@ func (ts *service) addTodo(c *fiber.Ctx) error {
 	err = ts.rr.AddTodo(t)
 	if err != nil {
 		ts.l.Error("rr.AddTodo", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
-			Msg: err.Error(),
-		})
 	}
 
 	resp := todoResponse{
@@ -62,15 +70,27 @@ func (ts *service) addTodo(c *fiber.Ctx) error {
 func (ts *service) getTodo(c *fiber.Ctx) error {
 	guid := c.Params("guid")
 
+	// get todo from redis
 	t, err := ts.rr.GetTodo(guid)
 	if err != nil {
 		ts.l.Warn("r.GetTodo", err.Error())
-		t, err = ts.pr.GetTodo(guid)
-		if err != nil {
-			ts.l.Error("r.GetTodo", err)
-			return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
-				Msg: err.Error(),
-			})
+
+		// get todo from postgres if not found in redis
+		if err.Error() == "redis: nil" {
+			t, err = ts.pr.GetTodo(guid)
+
+			if err != nil {
+				if err.Error() == "record not found" {
+					return c.Status(fiber.StatusNotFound).JSON(baseResponse{
+						Msg: err.Error(),
+					})
+				}
+
+				ts.l.Error("r.GetTodo", err)
+				return c.Status(fiber.StatusInternalServerError).JSON(baseResponse{
+					Msg: err.Error(),
+				})
+			}
 		}
 	}
 
