@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "3a40ae4f-6071-45e6-a5ec-5def83d0f770",
+		"name": "Westerops Todo Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add Todo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Bitirdikten sonra sevin\",\n    \"description\": \"be happy after finishing the project\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/api/todos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Todo by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/todos/c557f5a1-1a86-4000-9428-264e8c9f997e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"todos",
+						"c557f5a1-1a86-4000-9428-264e8c9f997e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Make done",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/todos/c557f5a1-1a86-4000-9428-264e8c9f997e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"todos",
+						"c557f5a1-1a86-4000-9428-264e8c9f997e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/todos/6a0c7438-57ad-48a4-a68b-b236e4888125",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"todos",
+						"6a0c7438-57ad-48a4-a68b-b236e4888125"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
