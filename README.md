@@ -30,5 +30,5 @@ Deletes todo
 
 Creates todo	
 	
-    title: 		 string
-    description: string
+    title: 		string
+    description: 	string
